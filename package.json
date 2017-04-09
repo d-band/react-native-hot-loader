@@ -1,0 +1,32 @@
+{
+  "name": "react-native-hot-loader",
+  "version": "0.0.1",
+  "description": "react-native hot loader",
+  "main": "lib/index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/d-band/react-native-hot-loader.git"
+  },
+  "keywords": [
+    "react-native",
+    "ios",
+    "android",
+    "loader"
+  ],
+  "author": "d-band",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/d-band/react-native-hot-loader/issues"
+  },
+  "peerDependencies": {
+    "react": "16.0.0-alpha.6",
+    "react-native": "0.43.2"
+  },
+  "homepage": "https://github.com/d-band/react-native-hot-loader#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "react": "16.0.0-alpha.6",
+    "react-native": "0.43.2"
+  }
+}

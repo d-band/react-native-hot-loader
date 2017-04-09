@@ -1,0 +1,27 @@
+{
+	"name": "Example",
+	"version": "0.0.1",
+	"private": true,
+	"scripts": {
+		"start": "react-native start",
+		"dev:ios": "react-native run-ios",
+		"dev:android": "react-native run-android",
+		"build:ios": "react-native bundle --entry-file index.ios.js --platform ios --bundle-output ios/Example/index.bundle",
+		"build:android": "react-native bundle --entry-file index.android.js --platform android --bundle-output android/app/src/main/assets/index.bundle",
+		"test": "jest"
+	},
+	"dependencies": {
+		"react": "16.0.0-alpha.6",
+		"react-native": "0.43.2",
+		"react-native-hot-loader": ".."
+	},
+	"devDependencies": {
+		"babel-jest": "19.0.0",
+		"babel-preset-react-native": "1.9.1",
+		"jest": "19.0.2",
+		"react-test-renderer": "16.0.0-alpha.6"
+	},
+	"jest": {
+		"preset": "react-native"
+	}
+}

@@ -1,0 +1,1 @@
+> fork and changed from [react-native-pushy](https://github.com/reactnativecn/react-native-pushy)
