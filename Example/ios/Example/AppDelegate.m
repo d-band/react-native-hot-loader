@@ -9,7 +9,7 @@
 
 #import "AppDelegate.h"
 
-#import "RCTHotUpdate.h"
+#import "RCTHotLoader.h"
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
 
@@ -19,7 +19,7 @@
 {
   NSURL *jsCodeLocation;
 
-  jsCodeLocation = [RCTHotUpdate bundleURL];
+  jsCodeLocation = [RCTHotLoader bundleURL];
 
   RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
                                                       moduleName:@"Example"

@@ -1,21 +1,13 @@
-//
-//  RCTHotUpdateDownloader.m
-//  RCTHotUpdate
-//
-//  Created by lvbingru on 16/2/23.
-//  Copyright © 2016年 erica. All rights reserved.
-//
+#import "RCTHotLoaderDownloader.h"
 
-#import "RCTHotUpdateDownloader.h"
-
-@interface RCTHotUpdateDownloader()<NSURLSessionDelegate>
+@interface RCTHotLoaderDownloader()<NSURLSessionDelegate>
 
 @property (copy) void (^progressHandler)(long long, long long);
 @property (copy) void (^completionHandler)(NSString*, NSError*);
 @property (copy) NSString *savePath;
 @end
 
-@implementation RCTHotUpdateDownloader
+@implementation RCTHotLoaderDownloader
 
 + (void)download:(NSString *)downloadPath savePath:(NSString *)savePath
 progressHandler:(void (^)(long long receivedBytes, long long totalBytes))progressHandler
@@ -24,7 +16,7 @@ completionHandler:(void (^)(NSString *path, NSError *error))completionHandler
     NSAssert(downloadPath, @"no download path");
     NSAssert(savePath, @"no save path");
 
-    RCTHotUpdateDownloader *downloader = [RCTHotUpdateDownloader new];
+    RCTHotLoaderDownloader *downloader = [RCTHotLoaderDownloader new];
     downloader.progressHandler = progressHandler;
     downloader.completionHandler = completionHandler;
     downloader.savePath = savePath;

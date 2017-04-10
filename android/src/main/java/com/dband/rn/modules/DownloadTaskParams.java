@@ -1,9 +1,9 @@
-package cn.reactnative.modules.update;
+package com.dband.rn.modules;
 
 import java.io.File;
 
 
-public class DownloadTaskParams {
+class DownloadTaskParams {
     static final int TASK_TYPE_FULL_DOWNLOAD = 1;
     static final int TASK_TYPE_CLEAR_UP = 0; //Keep hash & originHash
 
@@ -13,5 +13,5 @@ public class DownloadTaskParams {
     String      originHash;
     File        zipFilePath;
     File        unzipDirectory;
-    UpdateContext.DownloadFileListener listener;
+    RCTHotLoaderContext.DownloadFileListener listener;
 }

@@ -50279,16 +50279,16 @@ exports.markSuccess = markSuccess;
 
 var _reactNative = require(46            ); // 46 = react-native
 
-var HotUpdate = require(46            ).NativeModules.HotUpdate; // 46 = react-native
+var HotLoader = require(46            ).NativeModules.HotLoader; // 46 = react-native
 
 
 var host = 'http://update.reactnative.cn/api';
 
-var downloadRootDir = exports.downloadRootDir = HotUpdate.downloadRootDir;
-var packageVersion = exports.packageVersion = HotUpdate.packageVersion;
-var currentVersion = exports.currentVersion = HotUpdate.currentVersion;
-var isFirstTime = exports.isFirstTime = HotUpdate.isFirstTime;
-var isRolledBack = exports.isRolledBack = HotUpdate.isRolledBack;
+var downloadRootDir = exports.downloadRootDir = HotLoader.downloadRootDir;
+var packageVersion = exports.packageVersion = HotLoader.packageVersion;
+var currentVersion = exports.currentVersion = HotLoader.currentVersion;
+var isFirstTime = exports.isFirstTime = HotLoader.isFirstTime;
+var isRolledBack = exports.isRolledBack = HotLoader.isRolledBack;
 
 function checkUpdate(APPKEY) {
   var resp;
@@ -50354,7 +50354,7 @@ function downloadUpdate(options) {
 
         case 2:
           _context2.next = 4;
-          return regeneratorRuntime.awrap(HotUpdate.downloadUpdate({
+          return regeneratorRuntime.awrap(HotLoader.downloadUpdate({
             updateUrl: options.updateUrl,
             hashName: options.hash
           }));
@@ -50375,7 +50375,7 @@ function switchVersion(hash) {
     while (1) {
       switch (_context3.prev = _context3.next) {
         case 0:
-          HotUpdate.reloadUpdate({
+          HotLoader.reloadUpdate({
             hashName: hash
           });
 
@@ -50392,7 +50392,7 @@ function switchVersionLater(hash) {
     while (1) {
       switch (_context4.prev = _context4.next) {
         case 0:
-          HotUpdate.setNeedUpdate({
+          HotLoader.setNeedUpdate({
             hashName: hash
           });
 
@@ -50405,12 +50405,12 @@ function switchVersionLater(hash) {
 }
 
 function markSuccess() {
-  HotUpdate.markSuccess();
+  HotLoader.markSuccess();
 }
 
-_reactNative.NativeAppEventEmitter.addListener('RCTHotUpdateDownloadProgress', function (params) {});
+_reactNative.NativeAppEventEmitter.addListener('RCTHotLoaderDownloadProgress', function (params) {});
 
-_reactNative.NativeAppEventEmitter.addListener('RCTHotUpdateUnzipProgress', function (params) {});
+_reactNative.NativeAppEventEmitter.addListener('RCTHotLoaderUnzipProgress', function (params) {});
 }, 417, null, "react-native-hot-loader/lib/index.js");
 ;require(97);
 ;require(0);

@@ -1,4 +1,4 @@
-package cn.reactnative.modules.update;
+package com.dband.rn.modules;
 
 import android.app.Activity;
 import android.app.Application;
@@ -12,54 +12,53 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.cxxbridge.JSBundleLoader;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-public class UpdateModule extends ReactContextBaseJavaModule{
-    private UpdateContext updateContext;
+public class RCTHotLoaderModule extends ReactContextBaseJavaModule{
+    private RCTHotLoaderContext loaderContext;
 
-    public UpdateModule(ReactApplicationContext reactContext, UpdateContext updateContext) {
+    public RCTHotLoaderModule(ReactApplicationContext reactContext, RCTHotLoaderContext loaderContext) {
         super(reactContext);
-        this.updateContext = updateContext;
+        this.loaderContext = loaderContext;
     }
 
-    public UpdateModule(ReactApplicationContext reactContext) {
-        this(reactContext, new UpdateContext(reactContext.getApplicationContext()));
+    public RCTHotLoaderModule(ReactApplicationContext reactContext) {
+        this(reactContext, new RCTHotLoaderContext(reactContext.getApplicationContext()));
     }
 
     @Override
     public Map<String, Object> getConstants() {
         final Map<String, Object> constants = new HashMap<>();
-        constants.put("downloadRootDir", updateContext.getRootDir());
-        constants.put("packageVersion", updateContext.getPackageVersion());
-        constants.put("currentVersion", updateContext.getCurrentVersion());
-        boolean isFirstTime = updateContext.isFirstTime();
+        constants.put("downloadRootDir", loaderContext.getRootDir());
+        constants.put("packageVersion", loaderContext.getPackageVersion());
+        constants.put("currentVersion", loaderContext.getCurrentVersion());
+        boolean isFirstTime = loaderContext.isFirstTime();
         constants.put("isFirstTime", isFirstTime);
         if (isFirstTime) {
-            updateContext.clearFirstTime();
+            loaderContext.clearFirstTime();
         }
-        boolean isRolledBack = updateContext.isRolledBack();
+        boolean isRolledBack = loaderContext.isRolledBack();
         constants.put("isRolledBack", isRolledBack);
         if (isRolledBack) {
-            updateContext.clearRollbackMark();
+            loaderContext.clearRollbackMark();
         }
         return constants;
     }
 
     @Override
     public String getName() {
-        return "RCTHotUpdate";
+        return "RCTHotLoader";
     }
 
     @ReactMethod
     public void downloadUpdate(ReadableMap options, final Promise promise){
         String url = options.getString("updateUrl");
         String hash = options.getString("hashName");
-        updateContext.downloadFile(url, hash, new UpdateContext.DownloadFileListener() {
+        loaderContext.downloadFile(url, hash, new RCTHotLoaderContext.DownloadFileListener() {
             @Override
             public void onDownloadCompleted() {
                 promise.resolve(null);
@@ -79,7 +78,7 @@ public class UpdateModule extends ReactContextBaseJavaModule{
         UiThreadUtil.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                updateContext.switchVersion(hash);
+                loaderContext.switchVersion(hash);
                 try {
                     Activity activity = getCurrentActivity();
                     Application application = activity.getApplication();
@@ -89,7 +88,7 @@ public class UpdateModule extends ReactContextBaseJavaModule{
                     Class<?> jsBundleLoaderClass = Class.forName("com.facebook.react.cxxbridge.JSBundleLoader");
                     Method createFileLoaderMethod = jsBundleLoaderClass.getMethod("createFileLoader", String.class);
 
-                    String jsBundleFile = UpdateContext.getBundleUrl(application);
+                    String jsBundleFile = RCTHotLoaderContext.getBundleUrl(application);
                     Object newBundleLoader = createFileLoaderMethod.invoke(jsBundleLoaderClass, jsBundleFile);
                     bundleLoaderField.setAccessible(true);
                     bundleLoaderField.set(instanceManager, newBundleLoader);
@@ -109,7 +108,7 @@ public class UpdateModule extends ReactContextBaseJavaModule{
         UiThreadUtil.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                updateContext.switchVersion(hash);
+                loaderContext.switchVersion(hash);
             }
         });
     }
@@ -119,7 +118,7 @@ public class UpdateModule extends ReactContextBaseJavaModule{
         UiThreadUtil.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                updateContext.markSuccess();
+                loaderContext.markSuccess();
             }
         });
     }

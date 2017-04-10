@@ -1,4 +1,4 @@
-package cn.reactnative.modules.update;
+package com.dband.rn.modules;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -20,11 +20,11 @@ import okio.BufferedSink;
 import okio.BufferedSource;
 import okio.Okio;
 
-public class DownloadTask extends AsyncTask<DownloadTaskParams, Void, Void> {
+class DownloadTask extends AsyncTask<DownloadTaskParams, Void, Void> {
 
     private void removeDirectory(File file) throws IOException {
-        if (UpdateContext.DEBUG) {
-            Log.d("RNUpdate", "Removing " + file);
+        if (RCTHotLoaderContext.DEBUG) {
+            Log.d("RCTHotLoaderModule", "Removing " + file);
         }
         if (file.isDirectory()) {
             File[] files = file.listFiles();
@@ -59,8 +59,8 @@ public class DownloadTask extends AsyncTask<DownloadTaskParams, Void, Void> {
 
         BufferedSink sink = Okio.buffer(Okio.sink(writePath));
 
-        if (UpdateContext.DEBUG) {
-            Log.d("RNUpdate", "Downloading " + url);
+        if (RCTHotLoaderContext.DEBUG) {
+            Log.d("RCTHotLoaderModule", "Downloading " + url);
         }
 
         long bytesRead;
@@ -68,8 +68,8 @@ public class DownloadTask extends AsyncTask<DownloadTaskParams, Void, Void> {
         int DOWNLOAD_CHUNK_SIZE = 4096;
         while ((bytesRead = source.read(sink.buffer(), DOWNLOAD_CHUNK_SIZE)) != -1) {
             totalRead += bytesRead;
-            if (UpdateContext.DEBUG) {
-                Log.d("RNUpdate", "Progress " + totalRead + "/" + contentLength);
+            if (RCTHotLoaderContext.DEBUG) {
+                Log.d("RCTHotLoaderModule", "Progress " + totalRead + "/" + contentLength);
             }
         }
         if (totalRead != contentLength) {
@@ -78,8 +78,8 @@ public class DownloadTask extends AsyncTask<DownloadTaskParams, Void, Void> {
         sink.writeAll(source);
         sink.close();
 
-        if (UpdateContext.DEBUG) {
-            Log.d("RNUpdate", "Download finished");
+        if (RCTHotLoaderContext.DEBUG) {
+            Log.d("RCTHotLoaderModule", "Download finished");
         }
     }
 
@@ -113,8 +113,8 @@ public class DownloadTask extends AsyncTask<DownloadTaskParams, Void, Void> {
             String fn = ze.getName();
             File fmd = new File(param.unzipDirectory, fn);
 
-            if (UpdateContext.DEBUG) {
-                Log.d("RNUpdate", "Unzipping " + fn);
+            if (RCTHotLoaderContext.DEBUG) {
+                Log.d("RCTHotLoaderModule", "Unzipping " + fn);
             }
 
             if (ze.isDirectory()) {
@@ -127,14 +127,14 @@ public class DownloadTask extends AsyncTask<DownloadTaskParams, Void, Void> {
 
         zis.close();
 
-        if (UpdateContext.DEBUG) {
-            Log.d("RNUpdate", "Unzip finished");
+        if (RCTHotLoaderContext.DEBUG) {
+            Log.d("RCTHotLoaderModule", "Unzip finished");
         }
     }
 
     private void doCleanUp(DownloadTaskParams param) throws IOException {
-        if (UpdateContext.DEBUG) {
-            Log.d("RNUpdate", "Start cleaning up");
+        if (RCTHotLoaderContext.DEBUG) {
+            Log.d("RCTHotLoaderModule", "Start cleaning up");
         }
         File root = param.unzipDirectory;
         for (File sub : root.listFiles()) {
@@ -165,7 +165,7 @@ public class DownloadTask extends AsyncTask<DownloadTaskParams, Void, Void> {
             }
             params[0].listener.onDownloadCompleted();
         } catch (Throwable e) {
-            if (UpdateContext.DEBUG) {
+            if (RCTHotLoaderContext.DEBUG) {
                 e.printStackTrace();
             }
             params[0].listener.onDownloadFailed(e);

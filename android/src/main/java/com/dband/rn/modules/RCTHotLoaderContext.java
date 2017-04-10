@@ -1,20 +1,19 @@
-package cn.reactnative.modules.update;
+package com.dband.rn.modules;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.util.Log;
 
 import java.io.File;
 
-public class UpdateContext {
+public class RCTHotLoaderContext {
     private Context context;
     private File rootDir;
 
     public static boolean DEBUG = false;
 
-    public UpdateContext(Context context) {
+    public RCTHotLoaderContext(Context context) {
         this.context = context;
 
         this.rootDir = new File(context.getFilesDir(), "_update");
@@ -124,11 +123,11 @@ public class UpdateContext {
     }
 
     public static String getBundleUrl(Context context) {
-        return new UpdateContext(context.getApplicationContext()).getBundleUrl();
+        return new RCTHotLoaderContext(context.getApplicationContext()).getBundleUrl();
     }
 
     public static String getBundleUrl(Context context, String defaultAssetsUrl) {
-        return new UpdateContext(context.getApplicationContext()).getBundleUrl(defaultAssetsUrl);
+        return new RCTHotLoaderContext(context.getApplicationContext()).getBundleUrl(defaultAssetsUrl);
     }
 
     public String getBundleUrl() {

@@ -1,28 +1,20 @@
-//
-//  RCTHotUpdate.m
-//  RCTHotUpdate
-//
-//  Created by LvBingru on 2/19/16.
-//  Copyright © 2016 erica. All rights reserved.
-//
-
-#import "RCTHotUpdate.h"
-#import "RCTHotUpdateDownloader.h"
-#import "RCTHotUpdateManager.h"
+#import "RCTHotLoader.h"
+#import "RCTHotLoaderDownloader.h"
+#import "RCTHotLoaderManager.h"
 
 #import <React/RCTConvert.h>
 #import <React/RCTLog.h>
 
 //
-static NSString *const keyUpdateInfo = @"REACTNATIVECN_HOTUPDATE_INFO_KEY";
+static NSString *const keyUpdateInfo = @"RN_HOTLOADER_INFO_KEY";
 static NSString *const paramPackageVersion = @"packageVersion";
 static NSString *const paramLastVersion = @"lastVersion";
 static NSString *const paramCurrentVersion = @"currentVersion";
 static NSString *const paramIsFirstTime = @"isFirstTime";
 static NSString *const paramIsFirstLoadOk = @"isFirstLoadOK";
-static NSString *const keyFirstLoadMarked = @"REACTNATIVECN_HOTUPDATE_FIRSTLOADMARKED_KEY";
-static NSString *const keyRolledBackMarked = @"REACTNATIVECN_HOTUPDATE_ROLLEDBACKMARKED_KEY";
-static NSString *const KeyPackageUpdatedMarked = @"REACTNATIVECN_HOTUPDATE_ISPACKAGEUPDATEDMARKED_KEY";
+static NSString *const keyFirstLoadMarked = @"RN_HOTLOADER_FIRSTLOADMARKED_KEY";
+static NSString *const keyRolledBackMarked = @"RN_HOTLOADER_ROLLEDBACKMARKED_KEY";
+static NSString *const KeyPackageUpdatedMarked = @"RN_HOTLOADER_ISPACKAGEUPDATEDMARKED_KEY";
 
 // app info
 static NSString * const AppVersionKey = @"appVersion";
@@ -36,24 +28,24 @@ static NSString * const ERROR_OPTIONS = @"options error";
 static NSString * const ERROR_FILE_OPERATION = @"file operation error";
 
 // event def
-static NSString * const EVENT_PROGRESS_DOWNLOAD = @"RCTHotUpdateDownloadProgress";
-static NSString * const EVENT_PROGRESS_UNZIP = @"RCTHotUpdateUnzipProgress";
+static NSString * const EVENT_PROGRESS_DOWNLOAD = @"RCTHotLoaderDownloadProgress";
+static NSString * const EVENT_PROGRESS_UNZIP = @"RCTHotLoaderUnzipProgress";
 static NSString * const PARAM_PROGRESS_HASHNAME = @"hashname";
 static NSString * const PARAM_PROGRESS_RECEIVED = @"received";
 static NSString * const PARAM_PROGRESS_TOTAL = @"total";
 
 
-typedef NS_ENUM(NSInteger, HotUpdateType) {
-    HotUpdateTypeFullDownload = 1,
+typedef NS_ENUM(NSInteger, HotLoaderType) {
+    HotLoaderTypeFullDownload = 1,
 };
 
-@implementation RCTHotUpdate {
-    RCTHotUpdateManager *_fileManager;
+@implementation RCTHotLoader {
+    RCTHotLoaderManager *_fileManager;
 }
 
 @synthesize methodQueue = _methodQueue;
 
-RCT_EXPORT_MODULE(RCTHotUpdate);
+RCT_EXPORT_MODULE(RCTHotLoader);
 
 - (NSArray<NSString *> *)supportedEvents
 {
@@ -66,7 +58,7 @@ RCT_EXPORT_MODULE(RCTHotUpdate);
     
     NSDictionary *updateInfo = [defaults dictionaryForKey:keyUpdateInfo];
     if (updateInfo) {
-        NSString *curPackageVersion = [RCTHotUpdate packageVersion];
+        NSString *curPackageVersion = [RCTHotLoader packageVersion];
         NSString *packageVersion = [updateInfo objectForKey:paramPackageVersion];
         
         BOOL needClearUpdateInfo = ![curPackageVersion isEqualToString:packageVersion];
@@ -113,7 +105,7 @@ RCT_EXPORT_MODULE(RCTHotUpdate);
             }
             
             if (loadVersioin.length) {
-                NSString *downloadDir = [RCTHotUpdate downloadDir];
+                NSString *downloadDir = [RCTHotLoader downloadDir];
                 
                 NSString *bundlePath = [[downloadDir stringByAppendingPathComponent:loadVersioin] stringByAppendingPathComponent:BUNDLE_FILE_NAME];
                 if ([[NSFileManager defaultManager] fileExistsAtPath:bundlePath isDirectory:NULL]) {
@@ -124,7 +116,7 @@ RCT_EXPORT_MODULE(RCTHotUpdate);
         }
     }
     
-    return [RCTHotUpdate binaryBundleURL];
+    return [RCTHotLoader binaryBundleURL];
 }
 
 - (NSDictionary *)constantsToExport
@@ -132,8 +124,8 @@ RCT_EXPORT_MODULE(RCTHotUpdate);
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     
     NSMutableDictionary *ret = [NSMutableDictionary new];
-    ret[@"downloadRootDir"] = [RCTHotUpdate downloadDir];
-    ret[@"packageVersion"] = [RCTHotUpdate packageVersion];
+    ret[@"downloadRootDir"] = [RCTHotLoader downloadDir];
+    ret[@"packageVersion"] = [RCTHotLoader packageVersion];
     ret[@"isRolledBack"] = [defaults objectForKey:keyRolledBackMarked];
     ret[@"isFirstTime"] = [defaults objectForKey:keyFirstLoadMarked];
     NSDictionary *updateInfo = [defaults dictionaryForKey:keyUpdateInfo];
@@ -164,7 +156,7 @@ RCT_EXPORT_MODULE(RCTHotUpdate);
 {
     self = [super init];
     if (self) {
-        _fileManager = [RCTHotUpdateManager new];
+        _fileManager = [RCTHotLoaderManager new];
     }
     return self;
 }
@@ -173,7 +165,7 @@ RCT_EXPORT_METHOD(downloadUpdate:(NSDictionary *)options
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 {
-    [self hotUpdate:HotUpdateTypeFullDownload options:options callback:^(NSError *error) {
+    [self hotUpdate:HotLoaderTypeFullDownload options:options callback:^(NSError *error) {
         if (error) {
             reject([NSString stringWithFormat: @"%lu", (long)error.code], error.localizedDescription, error);
         }
@@ -199,7 +191,7 @@ RCT_EXPORT_METHOD(setNeedUpdate:(NSDictionary *)options)
         newInfo[paramLastVersion] = lastVersion;
         newInfo[paramIsFirstTime] = @(YES);
         newInfo[paramIsFirstLoadOk] = @(NO);
-        newInfo[paramPackageVersion] = [RCTHotUpdate packageVersion];
+        newInfo[paramPackageVersion] = [RCTHotLoader packageVersion];
         [defaults setObject:newInfo forKey:keyUpdateInfo];
         
         [defaults synchronize];
@@ -235,7 +227,7 @@ RCT_EXPORT_METHOD(markSuccess)
 }
 
 #pragma mark - private
-- (void)hotUpdate:(HotUpdateType)type options:(NSDictionary *)options callback:(void (^)(NSError *error))callback
+- (void)hotUpdate:(HotLoaderType)type options:(NSDictionary *)options callback:(void (^)(NSError *error))callback
 {
     NSString *updateUrl = [RCTConvert NSString:options[@"updateUrl"]];
     NSString *hashName = [RCTConvert NSString:options[@"hashName"]];
@@ -244,7 +236,7 @@ RCT_EXPORT_METHOD(markSuccess)
         return;
     }
     
-    NSString *dir = [RCTHotUpdate downloadDir];
+    NSString *dir = [RCTHotLoader downloadDir];
     BOOL success = [_fileManager createDir:dir];
     if (!success) {
         callback([self errorWithMessage:ERROR_FILE_OPERATION]);
@@ -253,8 +245,8 @@ RCT_EXPORT_METHOD(markSuccess)
     
     NSString *zipFilePath = [dir stringByAppendingPathComponent:[NSString stringWithFormat:@"%@%@",hashName, [self zipExtension:type]]];
 
-    RCTLogInfo(@"RNUpdate -- download file %@", updateUrl);
-    [RCTHotUpdateDownloader download:updateUrl savePath:zipFilePath progressHandler:^(long long receivedBytes, long long totalBytes) {
+    RCTLogInfo(@"HotLoader -- download file %@", updateUrl);
+    [RCTHotLoaderDownloader download:updateUrl savePath:zipFilePath progressHandler:^(long long receivedBytes, long long totalBytes) {
         [self sendEventWithName:EVENT_PROGRESS_DOWNLOAD
                                                      body:@{
                                                             PARAM_PROGRESS_HASHNAME:hashName,
@@ -266,7 +258,7 @@ RCT_EXPORT_METHOD(markSuccess)
             callback(error);
         }
         else {
-            RCTLogInfo(@"RNUpdate -- unzip file %@", zipFilePath);
+            RCTLogInfo(@"HotLoader -- unzip file %@", zipFilePath);
             NSString *unzipFilePath = [dir stringByAppendingPathComponent:hashName];
             [_fileManager unzipFileAtPath:zipFilePath toDestination:unzipFilePath progressHandler:^(NSString *entry,long entryNumber, long total) {
                 [self sendEventWithName:EVENT_PROGRESS_UNZIP
@@ -296,7 +288,7 @@ RCT_EXPORT_METHOD(markSuccess)
     NSDictionary *updateInfo = [defaults objectForKey:keyUpdateInfo];
     NSString *curVersion = [updateInfo objectForKey:paramCurrentVersion];
     
-    NSString *downloadDir = [RCTHotUpdate downloadDir];
+    NSString *downloadDir = [RCTHotLoader downloadDir];
     NSError *error = nil;
     NSArray *list = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:downloadDir error:&error];
     if (error) {
@@ -310,10 +302,10 @@ RCT_EXPORT_METHOD(markSuccess)
     }
 }
 
-- (NSString *)zipExtension:(HotUpdateType)type
+- (NSString *)zipExtension:(HotLoaderType)type
 {
     switch (type) {
-        case HotUpdateTypeFullDownload:
+        case HotLoaderTypeFullDownload:
             return @".ppk";
         default:
             break;
@@ -322,7 +314,7 @@ RCT_EXPORT_METHOD(markSuccess)
 
 - (NSError *)errorWithMessage:(NSString *)errorMessage
 {
-    return [NSError errorWithDomain:@"cn.reactnative.hotupdate"
+    return [NSError errorWithDomain:@"rn.hotupdate"
                                code:-1
                            userInfo:@{ NSLocalizedDescriptionKey: errorMessage}];
 }
@@ -330,7 +322,7 @@ RCT_EXPORT_METHOD(markSuccess)
 + (NSString *)downloadDir
 {
     NSString *directory = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) firstObject];
-    NSString *downloadDir = [directory stringByAppendingPathComponent:@"reactnativecnhotupdate"];
+    NSString *downloadDir = [directory stringByAppendingPathComponent:@"_update"];
     
     return downloadDir;
 }

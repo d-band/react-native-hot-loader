@@ -1,15 +1,7 @@
-//
-//  RCTHotUpdateManager.m
-//  RCTHotUpdate
-//
-//  Created by lvbingru on 16/4/1.
-//  Copyright © 2016年 erica. All rights reserved.
-//
-
-#import "RCTHotUpdateManager.h"
+#import "RCTHotLoaderManager.h"
 #import "ZipArchive.h"
 
-@implementation RCTHotUpdateManager {
+@implementation RCTHotLoaderManager {
     dispatch_queue_t _opQueue;
 }
 
@@ -17,7 +9,7 @@
 {
     self = [super init];
     if (self) {
-        _opQueue = dispatch_queue_create("cn.reactnative.hotupdate", DISPATCH_QUEUE_SERIAL);
+        _opQueue = dispatch_queue_create("rn.hotupdate", DISPATCH_QUEUE_SERIAL);
     }
     return self;
 }
