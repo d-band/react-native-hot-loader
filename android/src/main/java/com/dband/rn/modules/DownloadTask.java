@@ -3,24 +3,20 @@ package com.dband.rn.modules;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
-
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import okio.BufferedSink;
-import okio.BufferedSource;
-import okio.Okio;
-
 class DownloadTask extends AsyncTask<DownloadTaskParams, Void, Void> {
+
+    private static final int BUFFER_SIZE = 1024 * 256;
 
     private void removeDirectory(File file) throws IOException {
         if (RCTHotLoaderContext.DEBUG) {
@@ -42,60 +38,64 @@ class DownloadTask extends AsyncTask<DownloadTaskParams, Void, Void> {
     }
 
     private void downloadFile(String url, File writePath) throws IOException {
-        OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder().url(url)
-                .build();
-        Response response = client.newCall(request).execute();
-        if (response.code() > 299) {
-            throw new Error("Server return code " + response.code());
-        }
-        ResponseBody body = response.body();
-        long contentLength = body.contentLength();
-        BufferedSource source = body.source();
-
-        if (writePath.exists()) {
-            writePath.delete();
-        }
-
-        BufferedSink sink = Okio.buffer(Okio.sink(writePath));
-
         if (RCTHotLoaderContext.DEBUG) {
             Log.d("RCTHotLoaderModule", "Downloading " + url);
         }
+        HttpURLConnection connection = null;
+        BufferedInputStream bis = null;
+        FileOutputStream fos = null;
+        BufferedOutputStream bos = null;
 
-        long bytesRead;
-        long totalRead = 0;
-        int DOWNLOAD_CHUNK_SIZE = 4096;
-        while ((bytesRead = source.read(sink.buffer(), DOWNLOAD_CHUNK_SIZE)) != -1) {
-            totalRead += bytesRead;
-            if (RCTHotLoaderContext.DEBUG) {
-                Log.d("RCTHotLoaderModule", "Progress " + totalRead + "/" + contentLength);
+        try {
+            URL downloadUrl = new URL(url);
+            connection = (HttpURLConnection) (downloadUrl.openConnection());
+
+            long totalBytes = connection.getContentLength();
+            long receivedBytes = 0;
+
+            bis = new BufferedInputStream(connection.getInputStream());
+
+            if (writePath.exists()) {
+                writePath.delete();
             }
+            fos = new FileOutputStream(writePath);
+            bos = new BufferedOutputStream(fos, BUFFER_SIZE);
+            byte[] data = new byte[BUFFER_SIZE];
+            int numBytesRead;
+            while ((numBytesRead = bis.read(data, 0, BUFFER_SIZE)) >= 0) {
+                receivedBytes += numBytesRead;
+                bos.write(data, 0, numBytesRead);
+                if (RCTHotLoaderContext.DEBUG) {
+                    Log.d("RCTHotLoaderModule", "Progress " + receivedBytes + "/" + totalBytes);
+                }
+            }
+
+            if (totalBytes != receivedBytes) {
+                throw new IOException("Unexpected eof while reading ppk");
+            }
+        } finally {
+            if (bos != null) bos.close();
+            if (fos != null) fos.close();
+            if (bis != null) bis.close();
+            if (connection != null) connection.disconnect();
         }
-        if (totalRead != contentLength) {
-            throw new Error("Unexpected eof while reading ppk");
-        }
-        sink.writeAll(source);
-        sink.close();
 
         if (RCTHotLoaderContext.DEBUG) {
             Log.d("RCTHotLoaderModule", "Download finished");
         }
     }
 
-    private byte[] buffer = new byte[1024];
-
     private void unzipToFile(ZipInputStream zis, File fmd) throws IOException {
         int count;
-
-        FileOutputStream fout = new FileOutputStream(fmd);
+        byte[] buffer = new byte[BUFFER_SIZE];
+        FileOutputStream fos = new FileOutputStream(fmd);
 
         while ((count = zis.read(buffer)) != -1)
         {
-            fout.write(buffer, 0, count);
+            fos.write(buffer, 0, count);
         }
 
-        fout.close();
+        fos.close();
         zis.closeEntry();
     }
 

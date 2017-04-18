@@ -20,7 +20,7 @@ import {
 } from 'react-native-hot-loader';
 
 export default class Example extends Component {
-  componentWillMount(){
+  componentWillMount() {
     if (isRolledBack) {
       Alert.alert('提示', '刚刚更新失败了,版本被回滚.');
     } else if (isFirstTime) {
