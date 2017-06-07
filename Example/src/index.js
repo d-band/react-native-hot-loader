@@ -5,7 +5,9 @@ import {
   Text,
   View,
   Alert,
-  TouchableOpacity
+  Image,
+  TouchableOpacity,
+  Platform
 } from 'react-native';
 import {
   isFirstTime,
@@ -16,7 +18,7 @@ import {
   downloadUpdate,
   switchVersion,
   switchVersionLater,
-  markSuccess,
+  markSuccess
 } from 'react-native-hot-loader';
 
 export default class Example extends Component {
@@ -31,27 +33,34 @@ export default class Example extends Component {
     };
   }
   doUpdate = () => {
-    downloadUpdate({
-      update: true,
-      updateUrl: 'http://192.168.88.104:9000/android.ppk',
-      hash: String(Date.now())
-    }).then(hash => {
-      Alert.alert('提示', '下载完毕,是否重启应用?', [
-        {text: '是', onPress: () => {
-          switchVersion(hash);
-        }},
-        {text: '否',},
-        {text: '下次启动时', onPress: () => {
-          switchVersionLater(hash);
-        }},
-      ]);
-    }).catch(err => {
-      Alert.alert('提示', '更新失败.');
-    });
+    fetch(process.env.HOST)
+      .then((res) => res.json())
+      .then(data => {
+        const versions = data[Platform.OS];
+        downloadUpdate({
+          update: true,
+          updateUrl: versions['0.0.1'].url,
+          hash: String(Date.now())
+        }).then(hash => {
+          Alert.alert('提示', '下载完毕,是否重启应用?', [
+            {text: '是', onPress: () => {
+              switchVersion(hash);
+            }},
+            {text: '否'},
+            {text: '下次启动时', onPress: () => {
+              switchVersionLater(hash);
+            }}
+          ]);
+        }).catch(err => {
+          console.log(err);
+          Alert.alert('提示', '更新失败.');
+        });
+      });
   };
   render() {
     return (
       <View style={styles.container}>
+        <Image source={require('./logo.png')}/>
         <Text style={styles.welcome}>
           Welcome to React Native!
         </Text>

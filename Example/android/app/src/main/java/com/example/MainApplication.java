@@ -19,12 +19,13 @@ public class MainApplication extends Application implements ReactApplication {
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
     @Override
     protected String getJSBundleFile() {
-      return RCTHotLoaderContext.getBundleUrl(MainApplication.this, "assets://index.bundle");
+      return RCTHotLoaderContext.getBundleUrl(MainApplication.this, "assets://index.android.bundle");
     }
 
     @Override
     public boolean getUseDeveloperSupport() {
-      return BuildConfig.DEBUG;
+      return false;
+      // return BuildConfig.DEBUG;
     }
 
     @Override

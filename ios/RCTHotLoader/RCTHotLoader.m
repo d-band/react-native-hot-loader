@@ -21,7 +21,7 @@ static NSString * const AppVersionKey = @"appVersion";
 static NSString * const BuildVersionKey = @"buildVersion";
 
 // file def
-static NSString * const BUNDLE_FILE_NAME = @"index.bundle";
+static NSString * const BUNDLE_FILE_NAME = @"main.jsbundle";
 
 // error def
 static NSString * const ERROR_OPTIONS = @"options error";
@@ -329,7 +329,7 @@ RCT_EXPORT_METHOD(markSuccess)
 
 + (NSURL *)binaryBundleURL
 {
-    NSURL *url = [[NSBundle mainBundle] URLForResource:@"index" withExtension:@"bundle"];
+    NSURL *url = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
     return url;
 }
 

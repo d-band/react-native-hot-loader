@@ -6,20 +6,28 @@
 		"start": "react-native start",
 		"dev:ios": "react-native run-ios",
 		"dev:android": "react-native run-android",
-		"build:ios": "react-native bundle --entry-file index.ios.js --platform ios --bundle-output ios/Example/index.bundle",
-		"build:android": "react-native bundle --entry-file index.android.js --platform android --bundle-output android/app/src/main/assets/index.bundle",
+		"build:ios": "react-native bundle --entry-file index.ios.js --platform ios --bundle-output ios/Example/main.jsbundle --assets-dest ios/Example",
+		"build:android": "react-native bundle --entry-file index.android.js --platform android --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res",
 		"test": "jest"
 	},
 	"dependencies": {
 		"react": "16.0.0-alpha.6",
-		"react-native": "0.43.2",
+		"react-native": "0.44.3",
 		"react-native-hot-loader": ".."
 	},
 	"devDependencies": {
 		"babel-jest": "19.0.0",
+		"babel-plugin-transform-inline-environment-variables": "^0.1.1",
 		"babel-preset-react-native": "1.9.1",
+		"chokidar": "^1.7.0",
+		"glob": "^7.1.2",
+		"ip": "^1.1.5",
 		"jest": "19.0.2",
-		"react-test-renderer": "16.0.0-alpha.6"
+		"koa": "^2.2.0",
+		"mkdirp": "^0.5.1",
+		"react-test-renderer": "16.0.0-alpha.6",
+		"rimraf": "^2.6.1",
+		"yazl": "^2.4.2"
 	},
 	"jest": {
 		"preset": "react-native"

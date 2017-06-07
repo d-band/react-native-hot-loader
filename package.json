@@ -1,6 +1,6 @@
 {
   "name": "react-native-hot-loader",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "react-native hot loader",
   "main": "lib/index.js",
   "scripts": {},
@@ -20,13 +20,13 @@
     "url": "https://github.com/d-band/react-native-hot-loader/issues"
   },
   "peerDependencies": {
-    "react": "16.0.0-alpha.6",
-    "react-native": "0.43.2"
+    "react": "*",
+    "react-native": "*"
   },
   "homepage": "https://github.com/d-band/react-native-hot-loader#readme",
   "dependencies": {},
   "devDependencies": {
     "react": "16.0.0-alpha.6",
-    "react-native": "0.43.2"
+    "react-native": "0.44.3"
   }
 }

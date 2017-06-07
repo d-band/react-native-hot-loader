@@ -70,7 +70,7 @@ class DownloadTask extends AsyncTask<DownloadTaskParams, Void, Void> {
                 }
             }
 
-            if (totalBytes != receivedBytes) {
+            if (totalBytes != receivedBytes && totalBytes != -1) {
                 throw new IOException("Unexpected eof while reading ppk");
             }
         } finally {
@@ -120,6 +120,11 @@ class DownloadTask extends AsyncTask<DownloadTaskParams, Void, Void> {
             if (ze.isDirectory()) {
                 fmd.mkdirs();
                 continue;
+            }
+
+            File parent = fmd.getParentFile();
+            if (!parent.exists()) {
+                parent.mkdirs();
             }
 
             unzipToFile(zis, fmd);

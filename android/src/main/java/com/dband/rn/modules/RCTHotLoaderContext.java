@@ -149,7 +149,7 @@ public class RCTHotLoaderContext {
         if (currentVersion == null) {
             return defaultAssetsUrl;
         }
-        return (new File(rootDir, currentVersion + "/index.bundle").toString());
+        return (new File(rootDir, currentVersion + "/index.android.bundle").toString());
     }
 
     private String rollBack() {
